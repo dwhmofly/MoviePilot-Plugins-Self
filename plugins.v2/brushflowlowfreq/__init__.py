@@ -1402,7 +1402,7 @@ class BrushFlowLowFreq(_PluginBase):
                                                         'props': {
                                                             'model': 'hr_seed_time',
                                                             'label': 'H&R做种时间（小时）',
-                                                            'placeholder': '达到后删除任务'
+                                                            'placeholder': '达到后按其他删除规则删除任务'
                                                         }
                                                     }
                                                 ]
@@ -1418,8 +1418,8 @@ class BrushFlowLowFreq(_PluginBase):
                                                         'component': 'VTextField',
                                                         'props': {
                                                             'model': 'seed_ratio',
-                                                            'label': '分享率',
-                                                            'placeholder': '达到后删除任务'
+                                                            'label': 'H&R分享率',
+                                                            'placeholder': '达到后按其他删除规则删除任务'
                                                         }
                                                     }
                                                 ]
@@ -2646,17 +2646,16 @@ class BrushFlowLowFreq(_PluginBase):
         hr_specific_conditions_configured = hit_and_run and (brush_config.hr_seed_time or brush_config.seed_ratio)
         if hr_specific_conditions_configured:
             if (brush_config.hr_seed_time and torrent_info.get("seeding_time")
-                    < float(brush_config.hr_seed_time) * 3600):
-                return False, "H&R种子，未能满足设置的H&R删除条件"
-            if brush_config.seed_ratio and torrent_info.get("ratio") < float(brush_config.seed_ratio):
+                    < float(brush_config.hr_seed_time) * 3600) or (brush_config.seed_ratio and torrent_info.get("ratio") < float(brush_config.seed_ratio)):
                 return False, "H&R种子，未能满足设置的H&R删除条件"
 
         # 处理其他场景，1. 不是H&R种子；2. 是H&R种子但没有特定条件配置
         reason = reason if not hit_and_run else "H&R种子（未设置H&R条件），未能满足设置的删除条件"
         if brush_config.seed_time and torrent_info.get("seeding_time") >= float(brush_config.seed_time) * 3600:
             reason = f"做种时间 {torrent_info.get('seeding_time') / 3600:.1f} 小时，大于 {brush_config.seed_time} 小时"
-        elif brush_config.seed_ratio and torrent_info.get("ratio") >= float(brush_config.seed_ratio):
-            reason = f"分享率 {torrent_info.get('ratio'):.2f}，大于 {brush_config.seed_ratio}"
+        # 分享率仅对H&R种子生效
+        # elif brush_config.seed_ratio and torrent_info.get("ratio") >= float(brush_config.seed_ratio):
+        #     reason = f"分享率 {torrent_info.get('ratio'):.2f}，大于 {brush_config.seed_ratio}"
         elif brush_config.seed_size and torrent_info.get("uploaded") >= float(brush_config.seed_size) * 1024 ** 3:
             reason = f"上传量 {torrent_info.get('uploaded') / 1024 ** 3:.1f} GB，大于 {brush_config.seed_size} GB"
         elif brush_config.download_time and torrent_info.get("downloaded") < torrent_info.get(
