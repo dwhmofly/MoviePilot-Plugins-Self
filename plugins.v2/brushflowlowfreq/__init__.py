@@ -241,7 +241,7 @@ class BrushConfig:
         return self.__str__()
 
 
-class BrushFlowLowFreq(_PluginBase):
+class BrushFlowSelf(_PluginBase):
     # region 全局定义
 
     # 插件名称
