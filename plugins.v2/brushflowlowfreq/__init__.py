@@ -2646,12 +2646,10 @@ class BrushFlowLowFreq(_PluginBase):
         hr_specific_conditions_configured = hit_and_run and (brush_config.hr_seed_time or brush_config.seed_ratio)
         if hr_specific_conditions_configured:
             if (brush_config.hr_seed_time and torrent_info.get("seeding_time")
-                    >= float(brush_config.hr_seed_time) * 3600):
-                return True, (f"H&R种子，做种时间 {torrent_info.get('seeding_time') / 3600:.1f} 小时，"
-                              f"大于 {brush_config.hr_seed_time} 小时")
-            if brush_config.seed_ratio and torrent_info.get("ratio") >= float(brush_config.seed_ratio):
-                return True, f"H&R种子，分享率 {torrent_info.get('ratio'):.2f}，大于 {brush_config.seed_ratio}"
-            return False, "H&R种子，未能满足设置的H&R删除条件"
+                    < float(brush_config.hr_seed_time) * 3600):
+                return False, "H&R种子，未能满足设置的H&R删除条件"
+            if brush_config.seed_ratio and torrent_info.get("ratio") < float(brush_config.seed_ratio):
+                return False, "H&R种子，未能满足设置的H&R删除条件"
 
         # 处理其他场景，1. 不是H&R种子；2. 是H&R种子但没有特定条件配置
         reason = reason if not hit_and_run else "H&R种子（未设置H&R条件），未能满足设置的删除条件"
@@ -2673,7 +2671,7 @@ class BrushFlowLowFreq(_PluginBase):
         else:
             return False, reason
 
-        return True, reason if not hit_and_run else "H&R种子（未设置H&R条件），" + reason
+        return True, reason if not hit_and_run else "H&R种子（已满足H&R条件），" + reason
 
     def __evaluate_proxy_pre_conditions_for_delete(self, site_name: str, torrent_info: dict) -> Tuple[bool, str]:
         """
