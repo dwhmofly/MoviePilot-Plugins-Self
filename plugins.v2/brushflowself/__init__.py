@@ -253,9 +253,9 @@ class BrushFlowSelf(_PluginBase):
     # 插件版本
     plugin_version = "4.3.2"
     # 插件作者
-    plugin_author = "jxxghp,InfinityPacer"
+    plugin_author = "jxxghp,InfinityPacer,dwhmofly"
     # 作者主页
-    author_url = "https://github.com/InfinityPacer"
+    author_url = "https://github.com/dwhmofly"
     # 插件配置项ID前缀
     plugin_config_prefix = "brushflowlowfreq_"
     # 加载顺序
