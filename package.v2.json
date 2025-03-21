@@ -3,11 +3,12 @@
         "name": "站点刷流（自用版）",
         "description": "自动托管刷流，将会提高对应站点的访问频率。（基于官方插件BrushFlowLowFreq二次开发）",
         "labels": "站点,刷流,仪表板",
-        "version": "4.3.2",
+        "version": "4.3.3",
         "icon": "brush.jpg",
         "author": "jxxghp,InfinityPacer,dwhmofly",
         "level": 2,
         "history": {
+            "v4.3.3": "H&R删除逻辑变更",
             "v4.3.2": "更新版本号",
             "v4.3.1": "修复了一些细节问题",
             "v4.3": "优化执行周期输入，需要MoviePilot v2.2.1+",
