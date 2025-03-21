@@ -251,7 +251,7 @@ class BrushFlowSelf(_PluginBase):
     # 插件图标
     plugin_icon = "brush.jpg"
     # 插件版本
-    plugin_version = "4.3.2"
+    plugin_version = "4.3.3"
     # 插件作者
     plugin_author = "jxxghp,InfinityPacer,dwhmofly"
     # 作者主页
@@ -2645,8 +2645,8 @@ class BrushFlowSelf(_PluginBase):
         hit_and_run = torrent_task.get("hit_and_run", False)
         hr_specific_conditions_configured = hit_and_run and (brush_config.hr_seed_time or brush_config.seed_ratio)
         if hr_specific_conditions_configured:
-            if (brush_config.hr_seed_time and torrent_info.get("seeding_time")
-                    < float(brush_config.hr_seed_time) * 3600) or (brush_config.seed_ratio and torrent_info.get("ratio") < float(brush_config.seed_ratio)):
+            if (not brush_config.hr_seed_time or torrent_info.get("seeding_time")
+                    < float(brush_config.hr_seed_time) * 3600) and (not brush_config.seed_ratio or torrent_info.get("ratio") < float(brush_config.seed_ratio)):
                 return False, "H&R种子，未能满足设置的H&R删除条件"
 
         # 处理其他场景，1. 不是H&R种子；2. 是H&R种子但没有特定条件配置
