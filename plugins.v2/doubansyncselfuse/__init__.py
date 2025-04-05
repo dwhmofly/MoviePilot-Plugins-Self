@@ -34,7 +34,7 @@ class DoubanSyncSelfUse(_PluginBase):
     # 插件图标
     plugin_icon = "douban.png"
     # 插件版本
-    plugin_version = "1.0.0"
+    plugin_version = "1.0.1"
     # 插件作者
     plugin_author = "jxxghp"
     # 作者主页
@@ -594,7 +594,8 @@ class DoubanSyncSelfUse(_PluginBase):
                         search_results = self.searchchain.search_by_id(
                             tmdbid=mediainfo.tmdb_id,
                             mtype=mediainfo.type,
-                            season=meta.begin_season
+                            season=meta.begin_season,
+                            sites=self.systemconfig.get(SystemConfigKey.RssSites)
                         )
                         if search_results:
                             # 按订阅过滤规则过滤
