@@ -17,5 +17,19 @@
             "v4.0": "站点独立配置项支持配置NexusPHP 站点自动跳过下载提示页",
             "v3.9": "MoviePilot V2 版本站点刷流（低频版）插件"
         }
+    },
+    "DoubanSyncSelfUse": {
+        "name": "豆瓣想看（自用版）",
+        "version": "1.0.0",
+        "description": "同步豆瓣想看数据，自动添加订阅。（基于官方插件DoubanSync二次开发）",
+        "author": "jxxghp,dwhmofly",
+        "author_url": "https://github.com/jxxghp",
+        "icon": "douban.png",
+        "config_prefix": "doubansyncselfuse_",
+        "order": 3,
+        "auth_level": 2,
+        "history": {
+            "v1.0.0": "初始版本"
+        }
     }
 }
