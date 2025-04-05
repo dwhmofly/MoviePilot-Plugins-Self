@@ -34,7 +34,7 @@ class DoubanSyncSelfUse(_PluginBase):
     # 插件图标
     plugin_icon = "douban.png"
     # 插件版本
-    plugin_version = "1.0.1"
+    plugin_version = "1.0.2"
     # 插件作者
     plugin_author = "jxxghp"
     # 作者主页
@@ -591,43 +591,24 @@ class DoubanSyncSelfUse(_PluginBase):
                         real_name = self.__get_username_by_douban(user_id)
                         # 先搜索资源
                         logger.info(f'开始搜索 {mediainfo.title_year} 的资源...')
-                        search_results = self.searchchain.search_by_id(
-                            tmdbid=mediainfo.tmdb_id,
-                            mtype=mediainfo.type,
-                            season=meta.begin_season,
-                            sites=self.systemconfig.get(SystemConfigKey.RssSites)
+                         # 按订阅过滤规则搜索过滤
+                        filter_results = self.searchchain.process(
+                            mediainfo=mediainfo,
+                            no_exists=None,
+                            sites=self.systemconfig.get(SystemConfigKey.RssSites),
+                            rule_groups=self.systemconfig.get(SystemConfigKey.SubscribeFilterRuleGroups)
                         )
-                        if search_results:
-                            # 按订阅过滤规则过滤
-                            filter_results = self.searchchain.process(
-                                mediainfo=mediainfo,
-                                no_exists=None,
-                                rule_groups=self.systemconfig.get(SystemConfigKey.SubscribeFilterRuleGroups)
+                        if filter_results:
+                            logger.info(f'找到符合条件的资源，开始下载 {mediainfo.title_year} ...')
+                            # 下载第一个资源
+                            download_id = self.downloadchain.download_single(
+                                context=filter_results[0],
+                                username=real_name or f"豆瓣{nickname}想看"
                             )
-                            if filter_results:
-                                logger.info(f'找到符合条件的资源，开始下载 {mediainfo.title_year} ...')
-                                # 下载第一个资源
-                                download_id = self.downloadchain.download_single(
-                                    context=filter_results[0],
-                                    username=real_name or f"豆瓣{nickname}想看"
-                                )
-                                action = "download"
-                                if not download_id:
-                                    # 下载未成功，添加订阅
-                                    logger.info(f'下载失败，添加订阅 {mediainfo.title_year} ...')
-                                    self.subscribechain.add(
-                                        title=mediainfo.title,
-                                        year=mediainfo.year,
-                                        mtype=mediainfo.type,
-                                        tmdbid=mediainfo.tmdb_id,
-                                        season=meta.begin_season,
-                                        exist_ok=True,
-                                        username=real_name or f"豆瓣{nickname}想看"
-                                    )
-                                    action = "subscribe"
-                            else:
-                                # 未找到符合过滤条件的资源，添加订阅
-                                logger.info(f'未找到符合过滤条件的资源，添加订阅 {mediainfo.title_year} ...')
+                            action = "download"
+                            if not download_id:
+                                # 下载未成功，添加订阅
+                                logger.info(f'下载失败，添加订阅 {mediainfo.title_year} ...')
                                 self.subscribechain.add(
                                     title=mediainfo.title,
                                     year=mediainfo.year,
