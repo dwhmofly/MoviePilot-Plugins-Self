@@ -34,7 +34,7 @@ class DoubanSyncSelfUse(_PluginBase):
     # 插件图标
     plugin_icon = "douban.png"
     # 插件版本
-    plugin_version = "1.0.3"
+    plugin_version = "1.0.4"
     # 插件作者
     plugin_author = "jxxghp"
     # 作者主页
@@ -359,7 +359,7 @@ class DoubanSyncSelfUse(_PluginBase):
             mtype = history.get("type")
             time_str = history.get("time")
             doubanid = history.get("doubanid")
-            action = "下载" if history.get("action") == "download" else "订阅"
+            action = "下载" if history.get("action") == "download" else "订阅" if history.get("action") == "subscribe" else "存在" if history.get("action") == "exist" else history.get("action")
             contents.append(
                 {
                     'component': 'VCard',
