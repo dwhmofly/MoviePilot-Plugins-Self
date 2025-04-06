@@ -20,7 +20,7 @@
     },
     "DoubanSyncSelfUse": {
         "name": "豆瓣想看（自用版）",
-        "version": "1.0.2",
+        "version": "1.0.3",
         "description": "同步豆瓣想看数据，自动添加订阅。（基于官方插件DoubanSync二次开发）",
         "author": "jxxghp,dwhmofly",
         "author_url": "https://github.com/jxxghp",
@@ -29,6 +29,7 @@
         "order": 3,
         "auth_level": 2,
         "history": {
+            "v1.0.3": "数据面板增加展示了操作类型",
             "v1.0.2": "按订阅站点搜索修复",
             "v1.0.1": "按订阅站点搜索",
             "v1.0.0": "初始版本"
