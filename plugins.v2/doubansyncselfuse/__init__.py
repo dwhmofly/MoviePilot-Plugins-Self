@@ -30,11 +30,11 @@ class DoubanSyncSelfUse(_PluginBase):
     # 插件名称
     plugin_name = "豆瓣想看（自用版）"
     # 插件描述
-    plugin_desc = "同步豆瓣想看数据，自动添加订阅。"
+    plugin_desc = "同步豆瓣想看数据，自动添加订阅。（基于官方插件DoubanSync二次开发）"
     # 插件图标
     plugin_icon = "douban.png"
     # 插件版本
-    plugin_version = "1.0.4"
+    plugin_version = "1.0.5"
     # 插件作者
     plugin_author = "jxxghp"
     # 作者主页
@@ -591,7 +591,7 @@ class DoubanSyncSelfUse(_PluginBase):
                             continue
                     # 查询缺失的媒体信息
                     exist_flag, no_exists = self.downloadchain.get_no_exists_info(meta=meta, mediainfo=mediainfo)
-                    if exist_flag:
+                    if exist_flag and not no_exists:
                         logger.info(f'{mediainfo.title_year} 媒体库中已存在')
                         action = "exist"
                     else:
@@ -602,31 +602,61 @@ class DoubanSyncSelfUse(_PluginBase):
                          # 按订阅过滤规则搜索过滤
                         filter_results = self.searchchain.process(
                             mediainfo=mediainfo,
-                            no_exists=None,
+                            no_exists=no_exists,
                             sites=self.systemconfig.get(SystemConfigKey.RssSites),
                             rule_groups=self.systemconfig.get(SystemConfigKey.SubscribeFilterRuleGroups)
                         )
                         if filter_results:
                             logger.info(f'找到符合条件的资源，开始下载 {mediainfo.title_year} ...')
-                            # 下载第一个资源
-                            download_id = self.downloadchain.download_single(
-                                context=filter_results[0],
-                                username=real_name or f"豆瓣{nickname}想看"
-                            )
-                            action = "download"
-                            if not download_id:
-                                # 下载未成功，添加订阅
-                                logger.info(f'下载失败，添加订阅 {mediainfo.title_year} ...')
-                                self.subscribechain.add(
-                                    title=mediainfo.title,
-                                    year=mediainfo.year,
-                                    mtype=mediainfo.type,
-                                    tmdbid=mediainfo.tmdb_id,
-                                    season=meta.begin_season,
-                                    exist_ok=True,
+                            if mediainfo.type == MediaType.MOVIE:
+                                # 电影类型调用单次下载
+                                download_id = self.downloadchain.download_single(
+                                    context=filter_results[0],
                                     username=real_name or f"豆瓣{nickname}想看"
                                 )
-                                action = "subscribe"
+                                if download_id:
+                                    action = "download"
+                                else:
+                                    action = "subscribe"
+                                    # 下载未成功，添加订阅
+                                    logger.info(f'下载失败，添加订阅 {mediainfo.title_year} ...')
+                                    self.subscribechain.add(
+                                        title=mediainfo.title,
+                                        year=mediainfo.year,
+                                        mtype=mediainfo.type,
+                                        tmdbid=mediainfo.tmdb_id,
+                                        season=meta.begin_season,
+                                        exist_ok=True,
+                                        username=real_name or f"豆瓣{nickname}想看"
+                                    )
+                            else:
+                                # 电视剧类型调用批量下载
+                                downloaded_list, updated_no_exists = self.downloadchain.batch_download(
+                                    contexts=filter_results,
+                                    no_exists=no_exists,
+                                    username=real_name or f"豆瓣{nickname}想看"
+                                )
+                                if downloaded_list and not updated_no_exists:
+                                    action = "download"
+                                else:
+                                    action = "subscribe"
+                                    # 未找到资源，添加订阅
+                                    logger.info(f'未找到资源或缺失剧集，添加订阅 {mediainfo.title_year} ...')
+                                    sub_id, message = self.subscribechain.add(
+                                        title=mediainfo.title,
+                                        year=mediainfo.year,
+                                        mtype=mediainfo.type,
+                                        tmdbid=mediainfo.tmdb_id,
+                                        season=meta.begin_season,
+                                        exist_ok=True,
+                                        username=real_name or f"豆瓣{nickname}想看"
+                                    )
+                                    # 同步外部修改，更新订阅信息
+                                    subscribe = self.subscribechain.subscribeoper.get(sub_id)
+                                    if subscribe:
+                                        self.subscribechain.finish_subscribe_or_not(subscribe=subscribe, meta=meta, mediainfo=mediainfo,
+                                                     downloads=downloaded_list, lefts=updated_no_exists)
+
                         else:
                             # 未找到资源，添加订阅
                             logger.info(f'未找到资源，添加订阅 {mediainfo.title_year} ...')
