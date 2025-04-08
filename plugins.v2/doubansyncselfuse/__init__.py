@@ -34,7 +34,7 @@ class DoubanSyncSelfUse(_PluginBase):
     # 插件图标
     plugin_icon = "douban.png"
     # 插件版本
-    plugin_version = "1.0.8"
+    plugin_version = "1.0.9"
     # 插件作者
     plugin_author = "jxxghp,dwhmofly"
     # 作者主页
@@ -653,6 +653,7 @@ class DoubanSyncSelfUse(_PluginBase):
                                     if no_exists and no_exists.get(mediainfo.tmdb_id).get(meta.begin_season):
                                         logger.info(f'下载失败或未下载完所有剧集，添加订阅 {mediainfo.title_year} ...')
                                         sub_id, message = self.add_subscribe(mediainfo, meta, nickname, real_name)
+                                        action = "subscribe"
 
                                         # 更新订阅信息
                                         logger.info(f'根据缺失剧集更新订阅信息 {mediainfo.title_year} ...')
