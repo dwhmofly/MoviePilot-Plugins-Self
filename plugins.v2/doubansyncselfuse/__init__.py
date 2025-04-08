@@ -34,7 +34,7 @@ class DoubanSyncSelfUse(_PluginBase):
     # 插件图标
     plugin_icon = "douban.png"
     # 插件版本
-    plugin_version = "1.0.9"
+    plugin_version = "1.1.0"
     # 插件作者
     plugin_author = "jxxghp,dwhmofly"
     # 作者主页
@@ -379,7 +379,8 @@ class DoubanSyncSelfUse(_PluginBase):
             mtype = history.get("type")
             time_str = history.get("time")
             doubanid = history.get("doubanid")
-            action = "下载" if history.get("action") == "download" else "订阅" if history.get("action") == "subscribe" else "存在" if history.get("action") == "exist" else history.get("action")
+            action = "下载" if history.get("action") == "download" else "订阅" if history.get("action") == "subscribe" \
+                else "存在" if history.get("action") == "exist" else history.get("action")
             contents.append(
                 {
                     'component': 'VCard',
@@ -621,14 +622,12 @@ class DoubanSyncSelfUse(_PluginBase):
                         if self._search_download:
                             # 先搜索资源
                             logger.info(f'媒体库中不存在或不完整，开启搜索下载，开始搜索 {mediainfo.title_year} 的资源...')
-                             # 按订阅过滤规则搜索过滤
+                             # 按订阅优先级规则组搜索过滤，站点为设置的订阅站点
                             filter_results = self.searchchain.process(
                                 mediainfo=mediainfo,
                                 no_exists=no_exists,
                                 sites=self.systemconfig.get(SystemConfigKey.RssSites),
-                                rule_groups=self.systemconfig.get(
-                                    SystemConfigKey.DefaultMovieSubscribeConfig
-                                    if mediainfo.type == MediaType.MOVIE else SystemConfigKey.DefaultTvSubscribeConfig)
+                                rule_groups=self.systemconfig.get(SystemConfigKey.SubscribeFilterRuleGroups)
                             )
                             if filter_results:
                                 logger.info(f'找到符合条件的资源，开始下载 {mediainfo.title_year} ...')
@@ -650,7 +649,7 @@ class DoubanSyncSelfUse(_PluginBase):
                                         no_exists=no_exists,
                                         username=real_name or f"豆瓣{nickname}想看"
                                     )
-                                    if no_exists and no_exists.get(mediainfo.tmdb_id).get(meta.begin_season):
+                                    if no_exists:
                                         logger.info(f'下载失败或未下载完所有剧集，添加订阅 {mediainfo.title_year} ...')
                                         sub_id, message = self.add_subscribe(mediainfo, meta, nickname, real_name)
                                         action = "subscribe"
