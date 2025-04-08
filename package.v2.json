@@ -20,7 +20,7 @@
     },
     "DoubanSyncSelfUse": {
         "name": "豆瓣想看（自用版）",
-        "version": "1.0.7",
+        "version": "1.0.8",
         "description": "同步豆瓣想看数据，自动添加订阅。（基于官方插件DoubanSync二次开发）",
         "author": "jxxghp,dwhmofly",
         "author_url": "https://github.com/jxxghp",
@@ -29,6 +29,7 @@
         "order": 3,
         "auth_level": 2,
         "history": {
+            "v1.0.8": "修复下载后缺失剧集判断判断",
             "v1.0.7": "增加新配置项-搜索下载（开启后会优先在设置的订阅站点按媒体订阅规则搜索过滤下载资源，下载失败或无资源时才添加订阅）",
             "v1.0.6": "删除历史接口修复",
             "v1.0.5": "电视剧下载优化",
