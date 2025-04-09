@@ -34,7 +34,7 @@ class DoubanSyncSelfUse(_PluginBase):
     # 插件图标
     plugin_icon = "douban.png"
     # 插件版本
-    plugin_version = "1.1.0"
+    plugin_version = "1.1.1"
     # 插件作者
     plugin_author = "jxxghp,dwhmofly"
     # 作者主页
@@ -326,7 +326,8 @@ class DoubanSyncSelfUse(_PluginBase):
                                 'component': 'VCol',
                                 'props': {
                                     'cols': 12,
-                                    'md': 4
+                                    'md': 4,
+                                    'style': 'display:flex;align-items: center;'
                                 },
                                 'content': [
                                     {
@@ -335,9 +336,59 @@ class DoubanSyncSelfUse(_PluginBase):
                                             'model': 'search_download',
                                             'label': '搜索下载',
                                         }
-                                    }
+                                    }#,
+                                    # {
+                                    #     'component': 'div',
+                                    #     'content': [
+                                    #         {
+                                    #             'component': 'VIcon',
+                                    #             'props': {
+                                    #                 'icon': 'mdi-help-circle-outline',
+                                    #                 'size': '1.4rem'
+                                    #             }
+                                    #         },
+                                    #         {
+                                    #             'component': 'VTooltip',
+                                    #             'props': {
+                                    #                 'activator': 'parent',
+                                    #                 'style': 'background-color:none',
+                                    #             },
+                                    #             'content': [
+                                    #                 {
+                                    #                     'component': 'span',
+                                    #                     'props': {
+                                    #                         'style': 'font-size:1rem',
+                                    #                     },
+                                    #                     'text': '开启后，会优先按订阅优先级规则组搜索过滤下载，搜索站点为设置的订阅站点，下载失败/无资源/剧集不完整时仍会添加订阅'
+                                    #                 }
+                                    #             ]
+                                    #         }
+                                    #     ]
+                                    # }
                                 ]
                            }
+                        ]
+                    },
+                    {
+                        'component': 'VRow',
+                        'content': [
+                            {
+                                'component': 'VCol',
+                                'props': {
+                                    'cols': 12,
+                                },
+                                'content': [
+                                    {
+                                        'component': 'VAlert',
+                                        'props': {
+                                            'type': 'info',
+                                            'variant': 'tonal',
+                                            'text': '搜索下载开启后，会优先按订阅优先级规则组搜索过滤下载，搜索站点为设置的订'
+                                                    '阅站点，下载失败/无资源/剧集不完整时仍会添加订阅'
+                                        }
+                                    }
+                                ]
+                            }
                         ]
                     }
                 ]
